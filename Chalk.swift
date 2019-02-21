@@ -28,3 +28,15 @@ public extension String.StringInterpolation {
         appendLiteral("\u{001B}[0m")  // resets color
     }
 }
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(_ any: Any, color: UInt8, background: UInt8? = nil) {
+        appendInterpolation("\u{001B}[38;5;\(color)")
+        if let bg = background {
+            appendInterpolation(";48;5;\(bg)")
+        }
+        appendLiteral("m")
+        appendInterpolation("\(any)")
+        appendLiteral("\u{001B}[0m")  // resets color
+    }
+}
