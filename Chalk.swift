@@ -11,8 +11,12 @@ public enum Color: Int {
 
 public enum Style: Int {
     case bold = 1
-    case underline = 4
+    case dim = 2
     case italic = 3
+    case underlined = 4
+    case blink = 5
+    case inverse = 7
+    case hidden = 8  // for eg. passwords
     case strikethrough = 9  // not implemented in Terminal.app
 }
 
