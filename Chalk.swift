@@ -17,14 +17,14 @@ public enum Style: Int {
 }
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(_ text: String, color: Color, style: Style? = nil) {
+    mutating func appendInterpolation(_ any: Any, color: Color, style: Style? = nil) {
         appendLiteral("\u{001B}[")
         appendLiteral(String(color.rawValue))
         if let style = style?.rawValue {
             appendInterpolation(";\(style)")
         }
         appendLiteral("m")
-        appendLiteral(text)
+        appendInterpolation("\(any)")
         appendLiteral("\u{001B}[0m")  // resets color
     }
 }
