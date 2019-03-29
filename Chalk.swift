@@ -57,11 +57,15 @@ private extension String.StringInterpolation {
         var codeStrings: [String] = []
         
         if let color = color?.rawValue {
-            codeStrings.append("38;5;\(color)")
+            codeStrings.append("38")
+            codeStrings.append("5")
+            codeStrings.append("\(color)")
         }
         
         if let background = background?.rawValue {
-            codeStrings.append("48;5;\(background)")
+            codeStrings.append("48")
+            codeStrings.append("5")
+            codeStrings.append("\(background)")
         }
         
         if !styles.isEmpty {
@@ -85,12 +89,12 @@ public extension String.StringInterpolation {
         applyChalk(color: nil, background: background, styles: [], to: any)
     }
     
-    mutating func appendInterpolation(_ any: Any, styles: Set<Style>) {
-        applyChalk(color: nil, background: nil, styles: styles, to: any)
-    }
-    
     mutating func appendInterpolation(_ any: Any, style: Style) {
         applyChalk(color: nil, background: nil, styles: [style], to: any)
+    }
+    
+    mutating func appendInterpolation(_ any: Any, styles: Set<Style>) {
+        applyChalk(color: nil, background: nil, styles: styles, to: any)
     }
     
     mutating func appendInterpolation(_ any: Any, color: Color, background: Color) {
