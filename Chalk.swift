@@ -55,17 +55,6 @@ public struct Style: OptionSet {
     }
 }
 
-let styleCodeLookup: [Style : Int] = [
-    .bold : 1,
-    .dim : 2,
-    .italic : 3,
-    .underlined : 4,
-    .blink : 5,
-    .inverse : 7,
-    .hidden : 8,
-    .strikethrough : 9
-]
-
 private extension String.StringInterpolation {
     mutating func applyChalk(color: Color?, background: Color?, style: Style?, to any: Any) {
         appendLiteral("\u{001B}[")
@@ -85,10 +74,9 @@ private extension String.StringInterpolation {
         }
 
         if let style = style {
-            styleCodeLookup.forEach {
-                if style.contains($0.key) {
-                    codeStrings.append("\($0.value)")
-                }
+            let lookups: [(Style, Int)] = [(.bold, 1), (.dim, 2), (.italic, 3), (.underlined, 4), (.blink, 5), (.inverse, 7), (.hidden, 8), (.strikethrough, 9)]
+            for (key, value) in lookups where style.contains(key) {
+                codeStrings.append(String(value))
             }
         }
 
