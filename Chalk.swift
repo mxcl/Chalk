@@ -38,22 +38,38 @@ public enum Color: RawRepresentable {
     }
 }
 
-public enum Style: Int {
-    case bold = 1
-    case dim = 2
-    case italic = 3
-    case underlined = 4
-    case blink = 5
-    case inverse = 7
-    case hidden = 8  // for eg. passwords
-    case strikethrough = 9  // not implemented in Terminal.app
+public struct Style: OptionSet, Hashable {
+    public static let bold = Style(rawValue: 1 << 0)
+    public static let dim = Style(rawValue: 1 << 1)
+    public static let italic = Style(rawValue: 1 << 2)
+    public static let underlined = Style(rawValue: 1 << 3)
+    public static let blink = Style(rawValue: 1 << 4)
+    public static let inverse = Style(rawValue: 1 << 5)
+    public static let hidden = Style(rawValue: 1 << 6)  // for eg. passwords
+    public static let strikethrough = Style(rawValue: 1 << 7)  // not implemented in Terminal.app
+
+    public let rawValue: Int
+
+    public init(rawValue: Int) {
+        self.rawValue = rawValue
+    }
 }
 
+let styleCodeLookup: [Style : Int] = [
+    .bold : 1,
+    .dim : 2,
+    .italic : 3,
+    .underlined : 4,
+    .blink : 5,
+    .inverse : 7,
+    .hidden : 8,
+    .strikethrough : 9
+]
+
 private extension String.StringInterpolation {
-    mutating func applyChalk(color: Color?, background: Color?, styles: Set<Style>, to any: Any) {
+    mutating func applyChalk(color: Color?, background: Color?, style: Style?, to any: Any) {
         appendLiteral("\u{001B}[")
-        
-        let codeSeparator = ";"
+
         var codeStrings: [String] = []
         
         if let color = color?.rawValue {
@@ -67,12 +83,16 @@ private extension String.StringInterpolation {
             codeStrings.append("5")
             codeStrings.append("\(background)")
         }
-        
-        if !styles.isEmpty {
-            codeStrings.append(styles.map { "\($0.rawValue)" }.joined(separator: codeSeparator))
+
+        if let style = style {
+            styleCodeLookup.forEach {
+                if style.contains($0.key) {
+                    codeStrings.append("\($0.value)")
+                }
+            }
         }
-        
-        appendInterpolation(codeStrings.joined(separator: codeSeparator))
+
+        appendInterpolation(codeStrings.joined(separator: ";"))
         
         appendLiteral("m")
         appendInterpolation("\(any)")
@@ -82,46 +102,30 @@ private extension String.StringInterpolation {
 
 public extension String.StringInterpolation {
     mutating func appendInterpolation(_ any: Any, color: Color) {
-        applyChalk(color: color, background: nil, styles: [], to: any)
+        applyChalk(color: color, background: nil, style: nil, to: any)
     }
     
     mutating func appendInterpolation(_ any: Any, background: Color) {
-        applyChalk(color: nil, background: background, styles: [], to: any)
+        applyChalk(color: nil, background: background, style: nil, to: any)
     }
     
     mutating func appendInterpolation(_ any: Any, style: Style) {
-        applyChalk(color: nil, background: nil, styles: [style], to: any)
-    }
-    
-    mutating func appendInterpolation(_ any: Any, styles: Set<Style>) {
-        applyChalk(color: nil, background: nil, styles: styles, to: any)
+        applyChalk(color: nil, background: nil, style: style, to: any)
     }
     
     mutating func appendInterpolation(_ any: Any, color: Color, background: Color) {
-        applyChalk(color: color, background: background, styles: [], to: any)
+        applyChalk(color: color, background: background, style: nil, to: any)
     }
     
     mutating func appendInterpolation(_ any: Any, background: Color, style: Style) {
-        applyChalk(color: nil, background: background, styles: [style], to: any)
-    }
-    
-    mutating func appendInterpolation(_ any: Any, background: Color, styles: Set<Style>) {
-        applyChalk(color: nil, background: background, styles: styles, to: any)
+        applyChalk(color: nil, background: background, style: style, to: any)
     }
     
     mutating func appendInterpolation(_ any: Any, color: Color, style: Style) {
-        applyChalk(color: color, background: nil, styles: [style], to: any)
-    }
-    
-    mutating func appendInterpolation(_ any: Any, color: Color, styles: Set<Style>) {
-        applyChalk(color: color, background: nil, styles: styles, to: any)
+        applyChalk(color: color, background: nil, style: style, to: any)
     }
     
     mutating func appendInterpolation(_ any: Any, color: Color, background: Color, style: Style) {
-        applyChalk(color: color, background: background, styles: [style], to: any)
-    }
-    
-    mutating func appendInterpolation(_ any: Any, color: Color, background: Color, styles: Set<Style>) {
-        applyChalk(color: color, background: background, styles: styles, to: any)
+        applyChalk(color: color, background: background, style: style, to: any)
     }
 }
