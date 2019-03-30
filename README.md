@@ -11,6 +11,22 @@ let colorString = "blue"
 print("Here’s \(colorString, color: .blue)!")
 ```
 
+# Styles, Backgrounds, Extended Colors etc.
+
+```swift
+// color, background & style can be specified all together or individually:
+print("Foo \(string, color: .blue) bar")
+print("Foo \(string, color: .blue, background: .yellow) bar")
+print("Foo \(string, color: .blue, background: .yellow, style: .underline) bar")
+
+// styles are an `OptionSet`:
+print("Foo \(string, style: .underline) bar")
+print("Foo \(string, style: [.underline, .bold]) bar")
+
+// 256 color mode is supported:
+print("Foo \(string, color: .extended(78) bar")
+```
+
 # Name
 
 [Chalk] by [@sindresorhus] is an extremely famous Node package for the same
