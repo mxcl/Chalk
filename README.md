@@ -50,7 +50,7 @@ import Chalk  // @mxcl ~> 0.3
 for x in 0..<256 {
     let cell = " \(x)".padding(toLength: 5, withPad: " ", startingAt: 0)
     let terminator = (x + 3).isMultiple(of: 6) ? "\n" : ""
-    print("\(cell, color: 15, background: UInt8(x))", terminator: terminator)
+    print("\(cell, color: .extended(15), background: .extended(UInt8(x)))", terminator: terminator)
 }
 EOF
 ```
