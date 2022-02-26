@@ -1,6 +1,8 @@
 import Foundation
 
 fileprivate let stdOutIsColorTerm: Bool = {
+    if let cliColorForce = ProcessInfo.processInfo.environment["CLICOLOR_FORCE"],
+       ["1", "yes", "true"].contains(cliColorForce) { return true}
     guard isatty(STDOUT_FILENO) == 1 else { return false }
 #if os(macOS)
     if let xpcServiceName = ProcessInfo.processInfo.environment["XPC_SERVICE_NAME"],
