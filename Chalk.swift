@@ -1,3 +1,18 @@
+import Foundation
+
+fileprivate let stdOutIsColorTerm: Bool = {
+    guard isatty(STDOUT_FILENO) == 1 else { return false }
+#if os(macOS)
+    if let xpcServiceName = ProcessInfo.processInfo.environment["XPC_SERVICE_NAME"],
+       xpcServiceName.localizedCaseInsensitiveContains("com.apple.dt.xcode") {
+        return false
+    }
+#endif
+    guard let term = ProcessInfo.processInfo.environment["TERM"],
+          !["", "dumb", "cons25", "emacs"].contains(term) else { return false }
+    return true
+}()
+
 public enum Color: RawRepresentable {
     case black
     case red
@@ -57,6 +72,7 @@ public struct Style: OptionSet {
 
 private extension String.StringInterpolation {
     mutating func applyChalk(color: Color?, background: Color?, style: Style?, to any: Any) {
+        guard stdOutIsColorTerm else { return appendInterpolation("\(any)") }
         appendLiteral("\u{001B}[")
 
         var codeStrings: [String] = []
